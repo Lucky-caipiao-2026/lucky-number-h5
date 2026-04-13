@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>玄机彩票 - 你的专属幸运号</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --secondary: #6B8DB5;
+            --accent: #C9A962;
+            --bg-primary: #0F1419;
+            --bg-secondary: #1A2029;
+            --text-primary: #E8E6E3;
+            --text-secondary: #8B9A9F;
+            --water: #5B8FA8;
+            --wood: #7B9E6B;
+            --fire: #C76B6B;
+            --earth: #B5A68A;
+            --metal: #8B8B8B;
+            --shadow: rgba(0,0,0,0.3);
+            --card-bg: #1A2029;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(74,111,165,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(201,169,98,0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0F1419 0%, #1A2029 50%, #0F1419 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* 标题 */
+        header { text-align: center; padding: 30px 0 20px; }
+        .logo {
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 6px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(201,169,98,0.3);
+        }
+        .tagline { font-size: 14px; color: var(--text-secondary); letter-spacing: 4px; }
+
+        /* 每日运势 */
+        .daily-card {
+            background: linear-gradient(135deg, rgba(107,142,123,0.2), rgba(74,111,165,0.2));
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(107,142,123,0.3);
+        }
+        .daily-date { font-size: 14px; opacity: 0.8; margin-bottom: 8px; }
+        .daily-sign { font-size: 28px; margin-bottom: 12px; }
+        .daily-tips { font-size: 14px; line-height: 1.8; opacity: 0.9; }
+
+        /* 卡片 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(74,111,165,0.2);
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title .icon { font-size: 20px; }
+
+        /* 表单 */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+        .form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--secondary);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107,142,123,0.15);
+        }
+
+        /* 八字 */
+        .bazi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+        .bazi-item { text-align: center; padding: 12px 8px; background: var(--bg-primary); border-radius: 10px; }
+        .bazi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .bazi-value { font-size: 20px; color: var(--primary); }
+
+        /* 五行图 */
+        .wuxing-chart { display: flex; justify-content: space-around; margin: 20px 0; padding: 20px; background: var(--bg-secondary); border-radius: 12px; }
+        .wuxing-item { text-align: center; }
+        .wuxing-icon { font-size: 32px; margin-bottom: 4px; }
+        .wuxing-name { font-size: 14px; font-weight: 600; }
+        .wuxing-nums { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .wuxing-item.highlight { transform: scale(1.15); }
+        .wuxing-item.avoid { opacity: 0.4; }
+
+        /* 彩票选择 */
+        .lottery-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .lottery-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+        .lottery-tab.active { background: linear-gradient(135deg, #E8C468, #D4A574); color: #1A1A1A; font-weight: 600; }
+
+        /* 号码球 */
+        .number-group { padding: 16px; background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary)); border-radius: 12px; margin-bottom: 12px; }
+        .number-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+        .number-balls { display: flex; gap: 6px; flex-wrap: wrap; }
+        .ball {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+        }
+        .ball-red { background: linear-gradient(135deg, #E85A5A, #C74545); }
+        .ball-blue { background: linear-gradient(135deg, #5B8FC9, #4A7BB0); }
+        .ball-plus { color: var(--accent); font-size: 20px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+
+        /* 高级选项 */
+        .advanced-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .advanced-toggle .arrow { transition: transform 0.3s; }
+        .advanced-toggle.open .arrow { transform: rotate(180deg); }
+        .advanced-panel { display: none; padding-top: 16px; }
+        .advanced-panel.show { display: block; }
+        .option-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--bg-secondary); }
+        .option-item:last-child { border-bottom: none; }
+        .option-label { font-size: 14px; color: var(--text-primary); }
+        .toggle {
+            width: 48px; height: 26px;
+            border-radius: 13px;
+            background: var(--secondary);
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle.active { background: var(--primary); }
+        .toggle::after {
+            content: '';
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+            top: 2px; left: 2px;
+            transition: transform 0.3s;
+        }
+        .toggle.active::after { transform: translateX(22px); }
+
+        /* 统计模块 */
+        .stat-section { margin-bottom: 20px; }
+        .stat-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .stat-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid rgba(74,111,165,0.3);
+            transition: all 0.3s;
+        }
+        .stat-tab.active { background: linear-gradient(135deg, #E8C468, #D4A574); color: #1A1A1A; font-weight: 600; border-color: transparent; }
+        .stat-content { display: none; }
+        .stat-content.active { display: block; }
+
+        /* ========== 波线图样式（参考图片风格） ========== */
+        .wave-mini {
+            position: relative;
+            height: 200px;
+            padding: 35px 8px 30px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: visible;
+        }
+        .wave-svg-container {
+            position: absolute;
+            top: 35px;
+            left: 8px;
+            right: 8px;
+            bottom: 30px;
+            pointer-events: none;
+        }
+        .wave-svg-container svg {
+            width: 100%;
+            height: 100%;
+        }
+        .wave-line-path {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 0.35;
+            opacity: 0.5;
+        }
+        .wave-points-container {
+            position: absolute;
+            top: 35px;
+            left: 8px;
+            right: 8px;
+            bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .wave-point-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+            height: 100%;
+        }
+        .wave-point {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            transition: all 0.2s;
+        }
+        .wave-point.hot { background: #FFD700; box-shadow: 0 0 6px rgba(255,215,0,0.5); }
+        .wave-point.normal { background: #6B8DB5; }
+        .wave-point.cold { background: #4DD0E1; }
+        .wave-point:hover {
+            transform: scale(1.5);
+            box-shadow: 0 0 10px rgba(255,215,0,0.8);
+        }
+        .wave-num {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .wave-count {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: var(--accent);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* 热冷号榜 */
+        .rank-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .rank-item { display: flex; flex-direction: column; align-items: center; padding: 10px 6px; border-radius: 10px; background: rgba(0,0,0,0.2); }
+        .rank-item.rank-hot { background: linear-gradient(135deg, rgba(232,196,104,0.2), rgba(212,165,116,0.1)); border: 1px solid rgba(232,196,104,0.3); }
+        .rank-item.rank-cold { background: linear-gradient(135deg, rgba(74,111,165,0.2), rgba(74,111,165,0.1)); border: 1px solid rgba(74,111,165,0.3); }
+        .rank-num { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .rank-count { font-size: 11px; color: var(--accent); margin-top: 2px; }
+
+        /* 遗漏值 */
+        .miss-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .miss-cell { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px; }
+        .miss-cell.hot { background: linear-gradient(135deg, rgba(232,196,104,0.3), rgba(232,196,104,0.1)); }
+        .miss-cell.cold { background: linear-gradient(135deg, rgba(74,111,165,0.3), rgba(74,111,165,0.1)); }
+        .miss-num { font-weight: 700; color: var(--text-primary); }
+        .miss-value { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+
+        /* 区间分布 */
+        .zone-bar { margin-bottom: 12px; }
+        .zone-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+        .zone-track { height: 24px; background: rgba(0,0,0,0.2); border-radius: 12px; overflow: hidden; position: relative; }
+        .zone-fill { height: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11px; font-weight: 600; color: var(--text-primary); min-width: 30px; }
+        .zone-fill.zone-front { background: linear-gradient(90deg, var(--primary), var(--secondary)); }
+
+        /* 刷新按钮 */
+        .refresh-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--bg-primary); border: 1px solid rgba(74,111,165,0.3); border-radius: 20px; color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: all 0.3s; }
+        .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .refresh-btn.loading { animation: spin 1s linear infinite; }
+
+        /* 避开/必选 */
+        .number-input-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .number-input { width: 44px; height: 44px; text-align: center; border: 1px solid var(--secondary); border-radius: 8px; font-size: 16px; }
+        .number-input.avoid { border-color: #E85A5A; background: rgba(232,90,90,0.1); cursor: pointer; }
+        .number-input.must { border-color: var(--primary); background: rgba(107,142,123,0.1); cursor: pointer; }
+
+        /* 按钮 */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 18px; font-family: inherit; cursor: pointer; transition: all 0.3s; letter-spacing: 2px; }
+        .btn-primary { background: linear-gradient(135deg, #E8C468, #D4A574); color: #1A1A1A; font-weight: 600; border: 1px solid rgba(212,165,116,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212,165,116,0.4); }
+
+        /* 页脚 */
+        footer { text-align: center; padding: 30px 0; color: var(--text-secondary); font-size: 12px; }
+        footer .disclaimer { margin-top: 8px; font-size: 11px; opacity: 0.7; }
+
+        /* 动画 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        .hidden { display: none !important; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text-primary); color: white; padding: 12px 24px; border-radius: 24px; font-size: 14px; z-index: 1000; animation: fadeIn 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题 -->
+        <header>
+            <div class="logo">玄机彩票</div>
+            <div class="tagline">天时地利 人和玄机</div>
+        </header>
+
+        <!-- 每日运势 -->
+        <div class="daily-card fade-in" id="dailyCard">
+            <div class="daily-date" id="todayDate"></div>
+            <div class="daily-sign" id="dailySign"></div>
+            <div class="daily-tips" id="dailyTips"></div>
+        </div>
+
+        <!-- 生辰输入 -->
+        <div class="card">
+            <div class="card-title"><span class="icon">📜</span>你的生辰</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">年</label>
+                    <select id="birthYear"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">月</label>
+                    <select id="birthMonth"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">日</label>
+                    <select id="birthDay"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">出生时辰</label>
+                <select id="birthHour">
+                    <option value="0">子时 23:00-00:59</option>
+                    <option value="1">丑时 01:00-02:59</option>
+                    <option value="2">寅时 03:00-04:59</option>
+                    <option value="3">卯时 05:00-06:59</option>
+                    <option value="4">辰时 07:00-08:59</option>
+                    <option value="5">巳时 09:00-10:59</option>
+                    <option value="6">午时 11:00-12:59</option>
+                    <option value="7">未时 13:00-14:59</option>
+                    <option value="8">申时 15:00-16:59</option>
+                    <option value="9">酉时 17:00-18:59</option>
+                    <option value="10">戌时 19:00-20:59</option>
+                    <option value="11">亥时 21:00-22:59</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 命盘显示 -->
+        <div class="card hidden" id="baziCard">
+            <div class="card-title"><span class="icon">🎴</span>命盘解读</div>
+            <div class="bazi-grid">
+                <div class="bazi-item"><div class="bazi-label">年柱</div><div class="bazi-value" id="yearPillar">-</div></div>
+                <div class="bazi-item"><div class="bazi-label">月柱</div><div class="bazi-value" id="monthPillar">-</div></div>
+                <div class="bazi-item"><div class="bazi-label">日柱</div><div class="bazi-value" id="dayPillar">-</div></div>
+                <div class="bazi-item"><div class="bazi-label">时柱</div><div class="bazi-value" id="hourPillar">-</div></div>
+            </div>
+            <div class="wuxing-chart" id="wuxingChart"></div>
+            <div id="mingpanAnalysis" style="font-size: 14px; color: var(--text-secondary); line-height: 1.8;"></div>
+        </div>
+
+        <!-- 彩票选择 -->
+        <div class="card">
+            <div class="card-title"><span class="icon">🎱</span>选择彩票</div>
+            <div class="lottery-tabs">
+                <div class="lottery-tab active" data-type="dlt">大乐透</div>
+                <div class="lottery-tab" data-type="ssq">双色球</div>
+            </div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div class="card" id="statCard">
+            <div class="card-title">
+                <span class="icon">📊</span>历史数据
+                <button class="refresh-btn" id="refreshStat" style="margin-left: auto;">🔄 刷新</button>
+            </div>
+
+            <div class="stat-tabs">
+                <div class="stat-tab active" data-stat="wave">波线图</div>
+                <div class="stat-tab" data-stat="hot">热号榜</div>
+                <div class="stat-tab" data-stat="cold">冷号榜</div>
+                <div class="stat-tab" data-stat="miss">遗漏值</div>
+                <div class="stat-tab" data-stat="zone">区间分布</div>
+            </div>
+
+            <!-- 波线图 -->
+            <div class="stat-content active" id="statWave">
+                <div class="wave-mini" id="waveMini"></div>
+                <div style="font-size: 12px; color: var(--text-secondary); text-align: center;">
+                    橙色=热号 · 蓝色=冷号 · 绿=正常 · 最近30期
+                </div>
+            </div>
+
+            <!-- 热号榜 -->
+            <div class="stat-content" id="statHot">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">🔥 出现次数最多的号码</div>
+                <div class="rank-list" id="hotList"></div>
+            </div>
+
+            <!-- 冷号榜 -->
+            <div class="stat-content" id="statCold">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">❄️ 出现次数最少的号码</div>
+                <div class="rank-list" id="coldList"></div>
+            </div>
+
+            <!-- 遗漏值 -->
+            <div class="stat-content" id="statMiss">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">⏳ 距上次出现的期数</div>
+                <div id="missTable"></div>
+            </div>
+
+            <!-- 区间分布 -->
+            <div class="stat-content" id="statZone">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">📊 号码区间分布</div>
+                <div id="zoneStats"></div>
+            </div>
+        </div>
+
+        <!-- 高级选项 -->
+        <div class="card">
+            <div class="advanced-toggle" id="advancedToggle">
+                <span>⚙️ 高级选项</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="advanced-panel" id="advancedPanel">
+                <div class="option-item">
+                    <span class="option-label">🎨 幸运颜色加成</span>
+                    <div class="toggle active" data-feature="luckyColor"></div>
+                </div>
+                <div class="option-item">
+                    <span class="option-label">🐉 生肖幸运号参考</span>
+                    <div class="toggle active" data-feature="zodiac"></div>
+                </div>
+                <div class="option-item">
+                    <span class="option-label">📊 区间分布策略</span>
+                    <div class="toggle active" data-feature="zone"></div>
+                </div>
+                <div class="option-item">
+                    <span class="option-label">⚖️ 奇偶比例</span>
+                    <div class="toggle active" data-feature="oddEven"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生成按钮 -->
+        <button class="btn btn-primary" id="generateBtn">🚀 开启玄机</button>
+
+        <!-- 推荐结果 -->
+        <div class="card hidden" id="resultCard" style="margin-top: 20px;">
+            <div class="card-title"><span class="icon">✨</span>你的幸运号</div>
+            <div id="resultContent"></div>
+        </div>
+
+        <footer>
+            <div>心诚则灵，但不执迷</div>
+            <div class="disclaimer">彩票为公益事业，理性投注，量力而行<br>玄学仅供参考，娱乐为主</div>
+        </footer>
+    </div>
+
+    <div class="toast hidden" id="toast"></div>
+
+    <script>
+        // ==================== 常量 ====================
+        const TIANGAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+        const DIZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+        const NAYIN = {
+            '甲子':'海中金','乙丑':'海中金','丙寅':'炉中火','丁卯':'炉中火',
+            '戊辰':'大林木','己巳':'大林木','庚午':'路旁土','辛未':'路旁土',
+            '壬申':'剑锋金','癸酉':'剑锋金','甲戌':'山头火','乙亥':'山头火',
+            '丙子':'涧下水','丁丑':'涧下水','戊寅':'城头土','己卯':'城头土',
+            '庚辰':'白蜡金','辛巳':'白蜡金','壬午':'杨柳木','癸未':'杨柳木',
+            '甲申':'井泉水','乙酉':'井泉水','丙戌':'屋上土','丁亥':'屋上土',
+            '戊子':'霹雳火','己丑':'霹雳火','庚寅':'松柏木','辛卯':'松柏木',
+            '壬辰':'长流水','癸巳':'长流水','甲午':'沙中金','乙未':'沙中金',
+            '丙申':'山下火','丁酉':'山下火','戊戌':'平地木','己亥':'平地木',
+            '庚子':'壁上土','辛丑':'壁上土','壬寅':'金箔金','癸卯':'金箔金',
+            '甲辰':'佛灯火','乙巳':'佛灯火','丙午':'天河水','丁未':'天河水',
+            '戊申':'大驿土','己酉':'大驿土','庚戌':'钗钏金','辛亥':'钗钏金',
+            '壬子':'桑柘木','癸丑':'桑柘木','甲寅':'大溪水','乙卯':'大溪水',
+            '丙辰':'沙中土','丁巳':'沙中土','戊午':'天上火','己未':'天上火',
+            '庚申':'石榴木','辛酉':'石榴木','壬戌':'大海水','癸亥':'大海水'
+        };
+        const WUXING = {
+            '甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水',
+            '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水'
+        };
+        const WUXING_NUMS = { '木':[3,8],'火':[2,7],'土':[5,10],'金':[4,9],'水':[1,6] };
+        const WUXING_ICONS = { '木':'🌲','火':'🔥','土':'🏔️','金':'⚪','水':'💧' };
+        const WUXING_COLORS = { '木':'var(--wood)','火':'var(--fire)','土':'var(--earth)','金':'var(--metal)','水':'var(--water)' };
+
+        // ==================== 状态 ====================
+        let state = {
+            bazi: null, mingpan: null, lotteryType: 'dlt',
+            avoidNumbers: [], mustNumbers: [],
+            features: { luckyColor: true, zodiac: true, zone: true, oddEven: true }
+        };
+
+        // ==================== 八字计算 ====================
+        function calculateBazi() {
+            const year = parseInt(document.getElementById('birthYear').value);
+            const month = parseInt(document.getElementById('birthMonth').value);
+            const day = parseInt(document.getElementById('birthDay').value);
+            const hour = parseInt(document.getElementById('birthHour').value);
+
+            const yearGanIndex = (year - 4) % 10;
+            const yearZhiIndex = (year - 4) % 12;
+            const monthBase = (yearGanIndex % 2 === 0) ? 2 : 0;
+            const monthZhiIndex = (month + 1) % 12 || 12;
+            const monthGanIndex = (monthBase + monthZhiIndex - 1) % 10;
+            const totalDays = daysSince1900(year, month, day);
+            const dayGanIndex = totalDays % 10;
+            const dayZhiIndex = totalDays % 12;
+            const hourBase = (dayGanIndex % 2 === 0) ? 0 : 2;
+            const hourGanIndex = (hourBase + hour) % 10;
+
+            state.bazi = {
+                year: TIANGAN[yearGanIndex] + DIZHI[yearZhiIndex],
+                month: TIANGAN[monthGanIndex] + DIZHI[monthZhiIndex],
+                day: TIANGAN[dayGanIndex] + DIZHI[dayZhiIndex],
+                hour: TIANGAN[hourGanIndex] + DIZHI[hour]
+            };
+
+            state.mingpan = analyzeMingpan(state.bazi);
+            renderBaziCard();
+        }
+
+        function daysSince1900(year, month, day) {
+            let days = 0;
+            for (let y = 1900; y < year; y++) days += isLeapYear(y) ? 366 : 365;
+            for (let m = 1; m < month; m++) days += new Date(year, m, 0).getDate();
+            return days + day;
+        }
+
+        function isLeapYear(year) { return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0; }
+
+        function analyzeMingpan(bazi) {
+            const wuxingCount = { 木: 0, 火: 0, 土: 0, 金: 0, 水: 0 };
+            Object.values(bazi).forEach(p => { wuxingCount[WUXING[p[0]]]++; wuxingCount[WUXING[p[1]]]++; });
+            const dayWuxing = WUXING[bazi.day[0]];
+            const dayStrength = wuxingCount[dayWuxing];
+            let prefer = [], avoid = [];
+            const lack = Object.entries(wuxingCount).filter(([k,v]) => v === 0).map(([k]) => k);
+
+            if (dayWuxing === '木') { prefer = dayStrength >= 3 ? ['金','土'] : ['水','火']; avoid = dayStrength >= 3 ? ['水','木'] : ['金']; }
+            else if (dayWuxing === '火') { prefer = ['木','水']; avoid = ['土','金']; }
+            else if (dayWuxing === '土') { prefer = ['火','金']; avoid = ['木','水']; }
+            else if (dayWuxing === '金') { prefer = ['土','水']; avoid = ['火','木']; }
+            else if (dayWuxing === '水') { prefer = ['金','木']; avoid = ['土','火']; }
+
+            return { dayGan: bazi.day[0], dayZhi: bazi.day[1], wuxingCount, dayStrength, lack, prefer, avoid,
+                nayin: { year: NAYIN[bazi.year] || '未知', month: NAYIN[bazi.month] || '未知' }
+            };
+        }
+
+        function renderBaziCard() {
+            document.getElementById('baziCard').classList.remove('hidden');
+            document.getElementById('baziCard').classList.add('fade-in');
+            document.getElementById('yearPillar').textContent = state.bazi.year;
+            document.getElementById('monthPillar').textContent = state.bazi.month;
+            document.getElementById('dayPillar').textContent = state.bazi.day;
+            document.getElementById('hourPillar').textContent = state.bazi.hour;
+
+            const chart = document.getElementById('wuxingChart');
+            chart.innerHTML = '';
+            ['木','火','土','金','水'].forEach(wx => {
+                const count = state.mingpan.wuxingCount[wx];
+                const item = document.createElement('div');
+                item.className = 'wuxing-item' + (state.mingpan.prefer.includes(wx) ? ' highlight' : '');
+                if (state.mingpan.avoid.includes(wx) && count === 0) item.classList.add('avoid');
+                item.innerHTML = `<div class="wuxing-icon">${WUXING_ICONS[wx]}</div><div class="wuxing-name" style="color:${WUXING_COLORS[wx]}">${wx}</div><div class="wuxing-nums">${WUXING_NUMS[wx].join(',')}</div>`;
+                chart.appendChild(item);
+            });
+
+            document.getElementById('mingpanAnalysis').innerHTML = `
+                <strong>日主${state.mingpan.dayGan}，${state.mingpan.dayZhi}时</strong><br>
+                纳音：${state.mingpan.nayin.year} · ${state.mingpan.nayin.month}<br>
+                ${state.mingpan.lack.length ? `五行缺：${state.mingpan.lack.join('、')}<br>` : ''}
+                喜用：${state.mingpan.prefer.map(w => WUXING_ICONS[w] + w).join(' ')}<br>
+                ${state.mingpan.avoid.length ? `宜避：${state.mingpan.avoid.map(w => WUXING_ICONS[w] + w).join(' ')}` : ''}
+            `;
+        }
+
+        // ==================== 每日运势 ====================
+        function updateDailyCard() {
+            const now = new Date();
+            document.getElementById('todayDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+            const yearGanIndex = (now.getFullYear() - 4) % 10, yearZhiIndex = (now.getFullYear() - 4) % 12;
+            const monthZhiIndex = (now.getMonth() + 2) % 12 || 12;
+            const dayTotal = daysSince1900(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            const dayGanIndex = dayTotal % 10, dayZhiIndex = dayTotal % 12;
+            const signs = ['🌸','🍃','☀️','🌙','⭐','💫'];
+            const tips = ['今日木气旺盛，宜静心思考','流年火旺，注意调整心态','水润万物，今日适合开启新计划','土气收藏，宜稳扎稳打','金气渐起，把握机遇','五行调和，诸事顺遂'];
+            const signIndex = dayTotal % 6;
+            document.getElementById('dailySign').textContent = signs[signIndex];
+            document.getElementById('dailyTips').innerHTML = `<strong>今日磁场</strong><br>流年：${TIANGAN[yearGanIndex]}${DIZHI[yearZhiIndex]}（${WUXING[TIANGAN[yearGanIndex]]}${WUXING[DIZHI[yearZhiIndex]]}）<br>流月：${DIZHI[monthZhiIndex]}月（${WUXING[DIZHI[monthZhiIndex]]}）<br>流日：${TIANGAN[dayGanIndex]}${DIZHI[dayZhiIndex]}（${WUXING[TIANGAN[dayGanIndex]]}）<br>${tips[signIndex]}`;
+        }
+
+        // ==================== 模拟数据 ====================
+        let mockData = { dlt: { front: {}, back: {} }, ssq: { red: {}, blue: {} } };
+
+        function generateMockData() {
+            const dltFrontCounts = {}, dltBackCounts = {};
+            for (let i = 1; i <= 35; i++) dltFrontCounts[i] = 0;
+            for (let i = 1; i <= 12; i++) dltBackCounts[i] = 0;
+            const ssqRedCounts = {}, ssqBlueCounts = {};
+            for (let i = 1; i <= 33; i++) ssqRedCounts[i] = 0;
+            for (let i = 1; i <= 16; i++) ssqBlueCounts[i] = 0;
+
+            for (let p = 0; p < 30; p++) {
+                const dltFront = []; while (dltFront.length < 5) { const n = Math.floor(Math.random() * 35) + 1; if (!dltFront.includes(n)) dltFront.push(n); }
+                dltFront.forEach(n => dltFrontCounts[n]++);
+                const dltBack = []; while (dltBack.length < 2) { const n = Math.floor(Math.random() * 12) + 1; if (!dltBack.includes(n)) dltBack.push(n); }
+                dltBack.forEach(n => dltBackCounts[n]++);
+                const ssqRed = []; while (ssqRed.length < 6) { const n = Math.floor(Math.random() * 33) + 1; if (!ssqRed.includes(n)) ssqRed.push(n); }
+                ssqRed.forEach(n => ssqRedCounts[n]++);
+                const ssqBlue = Math.floor(Math.random() * 16) + 1;
+                ssqBlueCounts[ssqBlue]++;
+            }
+            mockData = { dlt: { front: dltFrontCounts, back: dltBackCounts }, ssq: { red: ssqRedCounts, blue: ssqBlueCounts } };
+        }
+
+        function calculateStats(type) {
+            const data = type === 'dlt' ? mockData.dlt : mockData.ssq;
+            const frontData = type === 'dlt' ? data.front : data.red;
+            const max = type === 'dlt' ? 35 : 33;
+            const stats = [];
+            for (let i = 1; i <= max; i++) stats.push({ num: i, count: frontData[i] || 0, miss: 0 });
+            const avgCount = stats.reduce((s, x) => s + x.count, 0) / stats.length;
+            stats.forEach(s => { if (s.count === 0) s.miss = Math.floor(Math.random() * 15) + 5; });
+            const hotList = [...stats].sort((a, b) => b.count - a.count).slice(0, 10);
+            const coldList = [...stats].sort((a, b) => a.count - b.count).slice(0, 10);
+            const zones = type === 'dlt' ? [
+                { name: '1-7', nums: stats.filter(s => s.num <= 7) },
+                { name: '8-14', nums: stats.filter(s => s.num >= 8 && s.num <= 14) },
+                { name: '15-21', nums: stats.filter(s => s.num >= 15 && s.num <= 21) },
+                { name: '22-28', nums: stats.filter(s => s.num >= 22 && s.num <= 28) },
+                { name: '29-35', nums: stats.filter(s => s.num >= 29) }
+            ] : [
+                { name: '1-11', nums: stats.filter(s => s.num <= 11) },
+                { name: '12-22', nums: stats.filter(s => s.num >= 12 && s.num <= 22) },
+                { name: '23-33', nums: stats.filter(s => s.num >= 23) }
+            ];
+            return { hotList, coldList, zones, stats, avgCount };
+        }
+
+        function renderStats(type) {
+            const { hotList, coldList, zones, stats, avgCount } = calculateStats(type);
+            const waveContainer = document.getElementById('waveMini');
+            const maxCount = Math.max(...stats.map(s => s.count), 1);
+
+            // SVG连线 - 穿过圆点中心
+            const points = stats.map((s, i) => {
+                const x = (i / (stats.length - 1)) * 100;
+                const y = 100 - (s.count / maxCount) * 100;
+                return { x, y };
+            });
+            const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+
+            waveContainer.innerHTML = `
+                <div class="wave-svg-container">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path class="wave-line-path" d="${pathD}" />
+                    </svg>
+                </div>
+                <div class="wave-points-container">
+                    ${stats.map((s, i) => {
+                        const colorClass = s.count > avgCount ? 'hot' : (s.count < avgCount * 0.5 ? 'cold' : 'normal');
+                        return `<div class="wave-point-wrap">
+                            <span class="wave-num">${s.num}</span>
+                            <div class="wave-point ${colorClass}"></div>
+                            <span class="wave-count">${s.count}</span>
+                        </div>`;
+                    }).join('')}
+                </div>
+            `;
+
+            document.getElementById('hotList').innerHTML = hotList.map(s => `
+                <div class="rank-item rank-hot">
+                    <span class="rank-num">${s.num}</span>
+                    <span class="rank-count">${s.count}次</span>
+                </div>`).join('');
+
+            document.getElementById('coldList').innerHTML = coldList.map(s => `
+                <div class="rank-item rank-cold">
+                    <span class="rank-num">${s.num}</span>
+                    <span class="rank-count">${s.count}次</span>
+                </div>`).join('');
+
+            const avgMiss = stats.reduce((s, x) => s + x.miss, 0) / stats.length;
+            document.getElementById('missTable').innerHTML = `<div class="miss-table">${stats.map(s => {
+                const isHot = s.count > 2, isCold = s.miss > avgMiss * 1.5;
+                return `<div class="miss-cell ${isHot ? 'hot' : ''} ${isCold ? 'cold' : ''}">
+                    <div class="miss-num">${s.num}</div><div class="miss-value">${s.miss}期</div>
+                </div>`;
+            }).join('')}</div>`;
+
+            const totalCount = stats.reduce((s, x) => s + x.count, 0);
+            document.getElementById('zoneStats').innerHTML = zones.map(z => {
+                const zc = z.nums.reduce((s, x) => s + x.count, 0);
+                const pct = totalCount > 0 ? Math.round((zc / totalCount) * 100) : 0;
+                return `<div class="zone-bar">
+                    <div class="zone-label">${z.name}</div>
+                    <div class="zone-track"><div class="zone-fill zone-front" style="width:${pct}%">${pct}%</div></div>
+                </div>`;
+            }).join('');
+        }
+
+        // ==================== 生成号码 ====================
+        function generateNumbers() {
+            const weights = { 1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1 };
+            if (state.mingpan) {
+                state.mingpan.prefer.forEach(wx => WUXING_NUMS[wx].forEach(n => weights[n] *= 1.5));
+                state.mingpan.avoid.forEach(wx => WUXING_NUMS[wx].forEach(n => weights[n] *= 0.5));
+            }
+            state.avoidNumbers.forEach(n => weights[n] *= 0.1);
+            state.mustNumbers.forEach(n => weights[n] *= 10);
+
+            const results = [];
+            for (let g = 0; g < 3; g++) {
+                if (state.lotteryType === 'dlt') {
+                    const pool = []; for (let i = 1; i <= 35; i++) for (let j = 0; j < Math.round((weights[i]||1)*10); j++) pool.push(i);
+                    const front = []; while (front.length < 5) { const n = pool[Math.floor(Math.random()*pool.length)]; if (!front.includes(n)) front.push(n); }
+                    const backPool = []; for (let i = 1; i <= 12; i++) for (let j = 0; j < Math.round((weights[i]||1)*10); j++) backPool.push(i);
+                    const back = []; while (back.length < 2) { const n = backPool[Math.floor(Math.random()*backPool.length)]; if (!back.includes(n)) back.push(n); }
+                    results.push({ type: 'dlt', front: front.sort((a,b)=>a-b), back: back.sort((a,b)=>a-b) });
+                } else {
+                    const pool = []; for (let i = 1; i <= 33; i++) for (let j = 0; j < Math.round((weights[i]||1)*10); j++) pool.push(i);
+                    const red = []; while (red.length < 6) { const n = pool[Math.floor(Math.random()*pool.length)]; if (!red.includes(n)) red.push(n); }
+                    const blue = Math.floor(Math.random() * 16) + 1;
+                    results.push({ type: 'ssq', front: red.sort((a,b)=>a-b), back: [blue] });
+                }
+            }
+            renderResults(results);
+        }
+
+        function renderResults(results) {
+            document.getElementById('resultCard').classList.remove('hidden');
+            const container = document.getElementById('resultContent');
+            container.innerHTML = '';
+            results.forEach((group, idx) => {
+                const div = document.createElement('div');
+                div.className = 'number-group fade-in';
+                const stars = '⭐'.repeat(3 - idx);
+                if (group.type === 'dlt') {
+                    div.innerHTML = `<div class="number-label">第${idx+1}组 ${stars}</div><div class="number-balls">${group.front.map(n=>`<div class="ball ball-red">${n}</div>`).join('')}<div class="ball-plus">|</div>${group.back.map(n=>`<div class="ball ball-blue">${n}</div>`).join('')}</div>`;
+                } else {
+                    div.innerHTML = `<div class="number-label">第${idx+1}组 ${stars}</div><div class="number-balls">${group.front.map(n=>`<div class="ball ball-red">${n}</div>`).join('')}<div class="ball-plus">+</div><div class="ball ball-blue">${group.back[0]}</div></div>`;
+                }
+                container.appendChild(div);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2000);
+        }
+
+        // ==================== 初始化 ====================
+        function initDateSelects() {
+            const yearSelect = document.getElementById('birthYear');
+            const monthSelect = document.getElementById('birthMonth');
+            const daySelect = document.getElementById('birthDay');
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= currentYear - 80; y--) yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+            for (let m = 1; m <= 12; m++) monthSelect.innerHTML += `<option value="${m}">${m}月</option>`;
+            updateDayOptions();
+        }
+
+        function updateDayOptions() {
+            const year = parseInt(document.getElementById('birthYear').value) || 2000;
+            const month = parseInt(document.getElementById('birthMonth').value) || 1;
+            const daySelect = document.getElementById('birthDay');
+            const days = new Date(year, month, 0).getDate();
+            daySelect.innerHTML = '';
+            for (let d = 1; d <= days; d++) daySelect.innerHTML += `<option value="${d}">${d}日</option>`;
+        }
+
+        function initEventListeners() {
+            document.getElementById('birthYear').addEventListener('change', () => { updateDayOptions(); calculateBazi(); });
+            document.getElementById('birthMonth').addEventListener('change', calculateBazi);
+            document.getElementById('birthDay').addEventListener('change', calculateBazi);
+            document.getElementById('birthHour').addEventListener('change', calculateBazi);
+
+            document.querySelectorAll('.lottery-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.lottery-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    state.lotteryType = tab.dataset.type;
+                    renderStats(state.lotteryType);
+                });
+            });
+
+            document.getElementById('advancedToggle').addEventListener('click', () => {
+                document.getElementById('advancedToggle').classList.toggle('open');
+                document.getElementById('advancedPanel').classList.toggle('show');
+            });
+
+            document.querySelectorAll('.toggle').forEach(t => {
+                t.addEventListener('click', () => {
+                    t.classList.toggle('active');
+                    state.features[t.dataset.feature] = t.classList.contains('active');
+                });
+            });
+
+            document.getElementById('generateBtn').addEventListener('click', generateNumbers);
+
+            document.querySelectorAll('.stat-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const statType = tab.dataset.stat;
+                    document.querySelectorAll('.stat-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById('stat' + statType.charAt(0).toUpperCase() + statType.slice(1)).classList.add('active');
+                });
+            });
+
+            document.getElementById('refreshStat').addEventListener('click', function() {
+                this.classList.add('loading');
+                setTimeout(() => {
+                    generateMockData();
+                    renderStats(state.lotteryType);
+                    this.classList.remove('loading');
+                    showToast('数据已刷新');
+                }, 500);
+            });
+        }
+
+        function init() {
+            initDateSelects();
+            initEventListeners();
+            updateDailyCard();
+            generateMockData();
+            renderStats('dlt');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
