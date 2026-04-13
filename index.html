@@ -65,6 +65,47 @@
         }
         .tagline { font-size: 14px; color: var(--text-secondary); letter-spacing: 4px; }
 
+        /* 最新开奖 */
+        .latest-result {
+            background: linear-gradient(135deg, rgba(232,196,104,0.15), rgba(232,196,104,0.05));
+            border: 1px solid rgba(232,196,104,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .latest-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .latest-period {
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .latest-balls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .latest-ball {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+        }
+        .latest-ball.red { background: linear-gradient(135deg, #E85A5A, #C74545); }
+        .latest-ball.blue { background: linear-gradient(135deg, #5B8FC9, #4A7BB0); }
+        .latest-plus { color: var(--accent); font-size: 20px; font-weight: bold; }
+
         /* 每日运势 */
         .daily-card {
             background: linear-gradient(135deg, rgba(107,142,123,0.2), rgba(74,111,165,0.2));
@@ -106,6 +147,45 @@
             gap: 8px;
         }
         .card-title .icon { font-size: 20px; }
+
+        /* 历史记录 */
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(74,111,165,0.1);
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-period {
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-width: 90px;
+        }
+        .history-balls {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .history-ball {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+        .history-ball.red { background: linear-gradient(135deg, #E85A5A, #C74545); }
+        .history-ball.blue { background: linear-gradient(135deg, #5B8FC9, #4A7BB0); }
+        .history-plus { color: var(--accent); font-size: 12px; }
 
         /* 表单 */
         .form-group { margin-bottom: 16px; }
@@ -232,7 +312,7 @@
         .stat-content { display: none; }
         .stat-content.active { display: block; }
 
-        /* ========== 波线图样式（参考图片风格） ========== */
+        /* 波线图样式 */
         .wave-mini {
             position: relative;
             height: 200px;
@@ -317,7 +397,7 @@
         /* 热冷号榜 */
         .rank-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         .rank-item { display: flex; flex-direction: column; align-items: center; padding: 10px 6px; border-radius: 10px; background: rgba(0,0,0,0.2); }
-        .rank-item.rank-hot { background: linear-gradient(135deg, rgba(232,196,104,0.2), rgba(212,165,116,0.1)); border: 1px solid rgba(232,196,104,0.3); }
+        .rank-item.rank-hot { background: linear-gradient(135deg, rgba(232,196,104,0.2), rgba(232,196,104,0.1)); border: 1px solid rgba(232,196,104,0.3); }
         .rank-item.rank-cold { background: linear-gradient(135deg, rgba(74,111,165,0.2), rgba(74,111,165,0.1)); border: 1px solid rgba(74,111,165,0.3); }
         .rank-num { font-size: 18px; font-weight: 700; color: var(--text-primary); }
         .rank-count { font-size: 11px; color: var(--accent); margin-top: 2px; }
@@ -365,6 +445,28 @@
 
         /* Toast */
         .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text-primary); color: white; padding: 12px 24px; border-radius: 24px; font-size: 14px; z-index: 1000; animation: fadeIn 0.3s; }
+        .toast.error { background: #E85A5A; }
+        .toast.success { background: #4CAF50; }
+
+        /* 加载状态 */
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(26,32,41,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            z-index: 10;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(232,196,104,0.3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -374,6 +476,25 @@
             <div class="logo">玄机彩票</div>
             <div class="tagline">天时地利 人和玄机</div>
         </header>
+
+        <!-- 最新开奖 -->
+        <div class="latest-result" id="latestResult">
+            <div class="latest-title">📢 最新开奖</div>
+            <div class="latest-period" id="latestPeriod">加载中...</div>
+            <div class="latest-balls" id="latestBalls">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- 历史记录入口 -->
+        <div class="card" style="cursor:pointer;" id="historyCard" onclick="toggleHistory()">
+            <div class="card-title">
+                <span class="icon">📜</span>历史开奖
+                <span style="margin-left:auto;font-size:12px;color:var(--text-secondary);" id="historyCount">加载中...</span>
+                <span style="font-size:12px;margin-left:8px;" id="historyArrow">▼</span>
+            </div>
+            <div class="history-list hidden" id="historyList"></div>
+        </div>
 
         <!-- 每日运势 -->
         <div class="daily-card fade-in" id="dailyCard">
@@ -541,16 +662,14 @@
             '壬申':'剑锋金','癸酉':'剑锋金','甲戌':'山头火','乙亥':'山头火',
             '丙子':'涧下水','丁丑':'涧下水','戊寅':'城头土','己卯':'城头土',
             '庚辰':'白蜡金','辛巳':'白蜡金','壬午':'杨柳木','癸未':'杨柳木',
-            '甲申':'井泉水','乙酉':'井泉水','丙戌':'屋上土','丁亥':'屋上土',
-            '戊子':'霹雳火','己丑':'霹雳火','庚寅':'松柏木','辛卯':'松柏木',
-            '壬辰':'长流水','癸巳':'长流水','甲午':'沙中金','乙未':'沙中金',
-            '丙申':'山下火','丁酉':'山下火','戊戌':'平地木','己亥':'平地木',
-            '庚子':'壁上土','辛丑':'壁上土','壬寅':'金箔金','癸卯':'金箔金',
-            '甲辰':'佛灯火','乙巳':'佛灯火','丙午':'天河水','丁未':'天河水',
-            '戊申':'大驿土','己酉':'大驿土','庚戌':'钗钏金','辛亥':'钗钏金',
-            '壬子':'桑柘木','癸丑':'桑柘木','甲寅':'大溪水','乙卯':'大溪水',
-            '丙辰':'沙中土','丁巳':'沙中土','戊午':'天上火','己未':'天上火',
-            '庚申':'石榴木','辛酉':'石榴木','壬戌':'大海水','癸亥':'大海水'
+            '甲申':'井泉水','乙酉':'井泉水','丙申':'山下火','丁酉':'山下火',
+            '戊戌':'平地木','己亥':'平地木','庚子':'壁上土','辛丑':'壁上土',
+            '壬寅':'金箔金','癸卯':'金箔金','甲辰':'佛灯火','乙巳':'佛灯火',
+            '丙午':'天河水','丁未':'天河水','戊申':'大驿土','己酉':'大驿土',
+            '庚戌':'钗钏金','辛亥':'钗钏金','壬子':'桑柘木','癸丑':'桑柘木',
+            '甲寅':'大溪水','乙卯':'大溪水','丙辰':'沙中土','丁巳':'沙中土',
+            '戊午':'天上火','己未':'天上火','庚申':'石榴木','辛酉':'石榴木',
+            '壬戌':'大海水','癸亥':'大海水'
         };
         const WUXING = {
             '甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水',
@@ -564,8 +683,184 @@
         let state = {
             bazi: null, mingpan: null, lotteryType: 'dlt',
             avoidNumbers: [], mustNumbers: [],
-            features: { luckyColor: true, zodiac: true, zone: true, oddEven: true }
+            features: { luckyColor: true, zodiac: true, zone: true, oddEven: true },
+            lotteryData: { dlt: { latest: null, history: [] }, ssq: { latest: null, history: [] } },
+            statsData: { dlt: { front: {}, back: {} }, ssq: { red: {}, blue: {} } }
         };
+
+        // ==================== API 数据获取 ====================
+        async function fetchLotteryData() {
+            try {
+                // 使用公开的彩票API
+                const [dltRes, ssqRes] = await Promise.all([
+                    fetch('https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.do?gameNo=85&provinceId=0&pageSize=50&pageNo=1&isDesc=true&endTime='),
+                    fetch('https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.do?gameNo=01&provinceId=0&pageSize=50&pageNo=1&isDesc=true&endTime=')
+                ]);
+
+                const dltData = await dltRes.json();
+                const ssqData = await ssqRes.json();
+
+                // 处理大乐透数据
+                if (dltData.value && dltData.value.lotteryDrawList) {
+                    const dltList = dltData.value.lotteryDrawList;
+                    state.lotteryData.dlt.latest = {
+                        period: dltList[0].lotteryDrawNum,
+                        front: dltList[0].lotteryDrawResult.split(' ')[0].split(',').map(n => parseInt(n)),
+                        back: dltList[0].lotteryDrawResult.split(' ')[1].split(',').map(n => parseInt(n))
+                    };
+                    state.lotteryData.dlt.history = dltList.map(item => ({
+                        period: item.lotteryDrawNum,
+                        front: item.lotteryDrawResult.split(' ')[0].split(',').map(n => parseInt(n)),
+                        back: item.lotteryDrawResult.split(' ')[1].split(',').map(n => parseInt(n))
+                    }));
+                }
+
+                // 处理双色球数据
+                if (ssqData.value && ssqData.value.lotteryDrawList) {
+                    const ssqList = ssqData.value.lotteryDrawList;
+                    state.lotteryData.ssq.latest = {
+                        period: ssqList[0].lotteryDrawNum,
+                        front: ssqList[0].lotteryDrawResult.split(' ')[0].split(',').map(n => parseInt(n)),
+                        back: [parseInt(ssqList[0].lotteryDrawResult.split(' ')[1])]
+                    };
+                    state.lotteryData.ssq.history = ssqList.map(item => ({
+                        period: item.lotteryDrawNum,
+                        front: item.lotteryDrawResult.split(' ')[0].split(',').map(n => parseInt(n)),
+                        back: [parseInt(item.lotteryDrawResult.split(' ')[1])]
+                    }));
+                }
+
+                // 计算统计数据
+                calculateStatsFromHistory();
+
+                // 渲染最新开奖
+                renderLatestResult();
+
+                // 渲染历史记录
+                renderHistoryList();
+
+                showToast('数据加载成功', 'success');
+
+            } catch (error) {
+                console.error('数据加载失败:', error);
+                showToast('数据加载失败，使用模拟数据', 'error');
+                // 加载失败时使用模拟数据
+                generateMockData();
+            }
+        }
+
+        function calculateStatsFromHistory() {
+            ['dlt', 'ssq'].forEach(type => {
+                const history = state.lotteryData[type].history;
+                const maxFront = type === 'dlt' ? 35 : 33;
+                const maxBack = type === 'dlt' ? 12 : 16;
+                const frontCounts = {};
+                const backCounts = {};
+
+                for (let i = 1; i <= maxFront; i++) frontCounts[i] = 0;
+                for (let i = 1; i <= maxBack; i++) backCounts[i] = 0;
+
+                // 统计出现次数
+                history.forEach(item => {
+                    item.front.forEach(n => { if (frontCounts[n] !== undefined) frontCounts[n]++; });
+                    item.back.forEach(n => { if (backCounts[n] !== undefined) backCounts[n]++; });
+                });
+
+                if (type === 'dlt') {
+                    state.statsData.dlt.front = frontCounts;
+                    state.statsData.dlt.back = backCounts;
+                } else {
+                    state.statsData.ssq.red = frontCounts;
+                    state.statsData.ssq.blue = backCounts;
+                }
+            });
+        }
+
+        function renderLatestResult() {
+            ['dlt', 'ssq'].forEach(type => {
+                const latest = state.lotteryData[type].latest;
+                if (!latest) return;
+
+                const prefix = type === 'dlt' ? 'dlt' : 'ssq';
+                document.getElementById(prefix + 'LatestPeriod').textContent = `第 ${latest.period} 期`;
+
+                const ballsHtml = latest.front.map(n =>
+                    `<div class="latest-ball red">${n}</div>`
+                ).join('') + '<div class="latest-plus">+</div>' + latest.back.map(n =>
+                    `<div class="latest-ball blue">${n}</div>`
+                ).join('');
+
+                document.getElementById(prefix + 'LatestBalls').innerHTML = ballsHtml;
+            });
+        }
+
+        function renderHistoryList() {
+            const type = state.lotteryType;
+            const history = state.lotteryData[type].history;
+
+            document.getElementById('historyCount').textContent = `共 ${history.length} 期`;
+
+            const listHtml = history.slice(0, 20).map(item => {
+                const frontHtml = item.front.map(n =>
+                    `<div class="history-ball red">${n}</div>`
+                ).join('');
+                const backHtml = item.back.map(n =>
+                    `<div class="history-ball blue">${n}</div>`
+                ).join('');
+                const plusSign = type === 'dlt' ? '<span class="history-plus">+</span>' : '';
+
+                return `
+                    <div class="history-item">
+                        <div class="history-period">${item.period}</div>
+                        <div class="history-balls">${frontHtml}${plusSign}${backHtml}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('historyList').innerHTML = listHtml;
+        }
+
+        function toggleHistory() {
+            const list = document.getElementById('historyList');
+            const arrow = document.getElementById('historyArrow');
+            list.classList.toggle('hidden');
+            arrow.textContent = list.classList.contains('hidden') ? '▼' : '▲';
+        }
+
+        // ==================== 备用：模拟数据生成 ====================
+        function generateMockData() {
+            // 生成模拟历史数据
+            const mockHistory = (maxFront, maxBack, frontCount, backCount) => {
+                const history = [];
+                for (let i = 0; i < 50; i++) {
+                    const front = [];
+                    while (front.length < frontCount) {
+                        const n = Math.floor(Math.random() * maxFront) + 1;
+                        if (!front.includes(n)) front.push(n);
+                    }
+                    const back = [];
+                    while (back.length < backCount) {
+                        const n = Math.floor(Math.random() * maxBack) + 1;
+                        if (!back.includes(n)) back.push(n);
+                    }
+                    history.push({
+                        period: `20${24000 + i}`,
+                        front: front.sort((a,b) => a-b),
+                        back: back.sort((a,b) => a-b)
+                    });
+                }
+                return history;
+            };
+
+            state.lotteryData.dlt.history = mockHistory(35, 12, 5, 2);
+            state.lotteryData.dlt.latest = state.lotteryData.dlt.history[0];
+            state.lotteryData.ssq.history = mockHistory(33, 16, 6, 1);
+            state.lotteryData.ssq.latest = state.lotteryData.ssq.history[0];
+
+            calculateStatsFromHistory();
+            renderLatestResult();
+            renderHistoryList();
+        }
 
         // ==================== 八字计算 ====================
         function calculateBazi() {
@@ -606,7 +901,7 @@
         function isLeapYear(year) { return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0; }
 
         function analyzeMingpan(bazi) {
-            const wuxingCount = { 木: 0, 火: 0, 土: 0, 金: 0, 水: 0 };
+            const wuxingCount = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
             Object.values(bazi).forEach(p => { wuxingCount[WUXING[p[0]]]++; wuxingCount[WUXING[p[1]]]++; });
             const dayWuxing = WUXING[bazi.day[0]];
             const dayStrength = wuxingCount[dayWuxing];
@@ -667,40 +962,40 @@
             document.getElementById('dailyTips').innerHTML = `<strong>今日磁场</strong><br>流年：${TIANGAN[yearGanIndex]}${DIZHI[yearZhiIndex]}（${WUXING[TIANGAN[yearGanIndex]]}${WUXING[DIZHI[yearZhiIndex]]}）<br>流月：${DIZHI[monthZhiIndex]}月（${WUXING[DIZHI[monthZhiIndex]]}）<br>流日：${TIANGAN[dayGanIndex]}${DIZHI[dayZhiIndex]}（${WUXING[TIANGAN[dayGanIndex]]}）<br>${tips[signIndex]}`;
         }
 
-        // ==================== 模拟数据 ====================
-        let mockData = { dlt: { front: {}, back: {} }, ssq: { red: {}, blue: {} } };
-
-        function generateMockData() {
-            const dltFrontCounts = {}, dltBackCounts = {};
-            for (let i = 1; i <= 35; i++) dltFrontCounts[i] = 0;
-            for (let i = 1; i <= 12; i++) dltBackCounts[i] = 0;
-            const ssqRedCounts = {}, ssqBlueCounts = {};
-            for (let i = 1; i <= 33; i++) ssqRedCounts[i] = 0;
-            for (let i = 1; i <= 16; i++) ssqBlueCounts[i] = 0;
-
-            for (let p = 0; p < 30; p++) {
-                const dltFront = []; while (dltFront.length < 5) { const n = Math.floor(Math.random() * 35) + 1; if (!dltFront.includes(n)) dltFront.push(n); }
-                dltFront.forEach(n => dltFrontCounts[n]++);
-                const dltBack = []; while (dltBack.length < 2) { const n = Math.floor(Math.random() * 12) + 1; if (!dltBack.includes(n)) dltBack.push(n); }
-                dltBack.forEach(n => dltBackCounts[n]++);
-                const ssqRed = []; while (ssqRed.length < 6) { const n = Math.floor(Math.random() * 33) + 1; if (!ssqRed.includes(n)) ssqRed.push(n); }
-                ssqRed.forEach(n => ssqRedCounts[n]++);
-                const ssqBlue = Math.floor(Math.random() * 16) + 1;
-                ssqBlueCounts[ssqBlue]++;
-            }
-            mockData = { dlt: { front: dltFrontCounts, back: dltBackCounts }, ssq: { red: ssqRedCounts, blue: ssqBlueCounts } };
-        }
-
+        // ==================== 统计数据计算 ====================
         function calculateStats(type) {
-            const data = type === 'dlt' ? mockData.dlt : mockData.ssq;
+            const data = type === 'dlt' ? state.statsData.dlt : state.statsData.ssq;
             const frontData = type === 'dlt' ? data.front : data.red;
             const max = type === 'dlt' ? 35 : 33;
+            const history = state.lotteryData[type].history;
+
+            // 计算遗漏值
+            const missCounts = {};
+            for (let i = 1; i <= max; i++) missCounts[i] = 0;
+
+            // 从最新期开始往前推，计算每个号码的遗漏
+            history.forEach(item => {
+                item.front.forEach(n => {
+                    if (missCounts[n] !== undefined) {
+                        missCounts[n] = 0;
+                    }
+                });
+                for (let i = 1; i <= max; i++) {
+                    if (item.front.includes(i)) {
+                        missCounts[i] = 0;
+                    } else if (missCounts[i] !== undefined) {
+                        missCounts[i]++;
+                    }
+                }
+            });
+
             const stats = [];
-            for (let i = 1; i <= max; i++) stats.push({ num: i, count: frontData[i] || 0, miss: 0 });
-            const avgCount = stats.reduce((s, x) => s + x.count, 0) / stats.length;
-            stats.forEach(s => { if (s.count === 0) s.miss = Math.floor(Math.random() * 15) + 5; });
+            for (let i = 1; i <= max; i++) stats.push({ num: i, count: frontData[i] || 0, miss: missCounts[i] || 0 });
+
+            const avgCount = stats.reduce((s, x) => s + x.count, 0) / (stats.length || 1);
             const hotList = [...stats].sort((a, b) => b.count - a.count).slice(0, 10);
             const coldList = [...stats].sort((a, b) => a.count - b.count).slice(0, 10);
+
             const zones = type === 'dlt' ? [
                 { name: '1-7', nums: stats.filter(s => s.num <= 7) },
                 { name: '8-14', nums: stats.filter(s => s.num >= 8 && s.num <= 14) },
@@ -712,6 +1007,7 @@
                 { name: '12-22', nums: stats.filter(s => s.num >= 12 && s.num <= 22) },
                 { name: '23-33', nums: stats.filter(s => s.num >= 23) }
             ];
+
             return { hotList, coldList, zones, stats, avgCount };
         }
 
@@ -720,7 +1016,7 @@
             const waveContainer = document.getElementById('waveMini');
             const maxCount = Math.max(...stats.map(s => s.count), 1);
 
-            // SVG连线 - 穿过圆点中心
+            // SVG连线
             const points = stats.map((s, i) => {
                 const x = (i / (stats.length - 1)) * 100;
                 const y = 100 - (s.count / maxCount) * 100;
@@ -758,9 +1054,10 @@
                     <span class="rank-count">${s.count}次</span>
                 </div>`).join('');
 
-            const avgMiss = stats.reduce((s, x) => s + x.miss, 0) / stats.length;
+            const avgMiss = stats.reduce((s, x) => s + x.miss, 0) / (stats.length || 1);
             document.getElementById('missTable').innerHTML = `<div class="miss-table">${stats.map(s => {
-                const isHot = s.count > 2, isCold = s.miss > avgMiss * 1.5;
+                const isHot = s.count > avgCount;
+                const isCold = s.miss > avgMiss * 1.5;
                 return `<div class="miss-cell ${isHot ? 'hot' : ''} ${isCold ? 'cold' : ''}">
                     <div class="miss-num">${s.num}</div><div class="miss-value">${s.miss}期</div>
                 </div>`;
@@ -787,18 +1084,36 @@
             state.avoidNumbers.forEach(n => weights[n] *= 0.1);
             state.mustNumbers.forEach(n => weights[n] *= 10);
 
+            // 基于真实统计数据加权
+            const type = state.lotteryType;
+            const stats = calculateStats(type);
+            const avgCount = stats.avgCount;
+
             const results = [];
             for (let g = 0; g < 3; g++) {
                 if (state.lotteryType === 'dlt') {
-                    const pool = []; for (let i = 1; i <= 35; i++) for (let j = 0; j < Math.round((weights[i]||1)*10); j++) pool.push(i);
+                    const pool = []; for (let i = 1; i <= 35; i++) {
+                        const weight = (weights[i] || 1) * (1 + (state.statsData.dlt.front[i] || 0) / 10);
+                        for (let j = 0; j < Math.round(weight * 10); j++) pool.push(i);
+                    }
                     const front = []; while (front.length < 5) { const n = pool[Math.floor(Math.random()*pool.length)]; if (!front.includes(n)) front.push(n); }
-                    const backPool = []; for (let i = 1; i <= 12; i++) for (let j = 0; j < Math.round((weights[i]||1)*10); j++) backPool.push(i);
+                    const backPool = []; for (let i = 1; i <= 12; i++) {
+                        const weight = (weights[i] || 1) * (1 + (state.statsData.dlt.back[i] || 0) / 5);
+                        for (let j = 0; j < Math.round(weight * 10); j++) backPool.push(i);
+                    }
                     const back = []; while (back.length < 2) { const n = backPool[Math.floor(Math.random()*backPool.length)]; if (!back.includes(n)) back.push(n); }
                     results.push({ type: 'dlt', front: front.sort((a,b)=>a-b), back: back.sort((a,b)=>a-b) });
                 } else {
-                    const pool = []; for (let i = 1; i <= 33; i++) for (let j = 0; j < Math.round((weights[i]||1)*10); j++) pool.push(i);
+                    const pool = []; for (let i = 1; i <= 33; i++) {
+                        const weight = (weights[i] || 1) * (1 + (state.statsData.ssq.red[i] || 0) / 10);
+                        for (let j = 0; j < Math.round(weight * 10); j++) pool.push(i);
+                    }
                     const red = []; while (red.length < 6) { const n = pool[Math.floor(Math.random()*pool.length)]; if (!red.includes(n)) red.push(n); }
-                    const blue = Math.floor(Math.random() * 16) + 1;
+                    const bluePool = []; for (let i = 1; i <= 16; i++) {
+                        const weight = (weights[i] || 1) * (1 + (state.statsData.ssq.blue[i] || 0) / 5);
+                        for (let j = 0; j < Math.round(weight * 10); j++) bluePool.push(i);
+                    }
+                    const blue = bluePool[Math.floor(Math.random()*bluePool.length)];
                     results.push({ type: 'ssq', front: red.sort((a,b)=>a-b), back: [blue] });
                 }
             }
@@ -822,9 +1137,11 @@
             });
         }
 
-        function showToast(msg) {
+        function showToast(msg, type = '') {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
+            toast.className = 'toast';
+            if (type) toast.classList.add(type);
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 2000);
         }
@@ -861,6 +1178,8 @@
                     tab.classList.add('active');
                     state.lotteryType = tab.dataset.type;
                     renderStats(state.lotteryType);
+                    renderHistoryList();
+                    renderLatestResult();
                 });
             });
 
@@ -890,12 +1209,12 @@
 
             document.getElementById('refreshStat').addEventListener('click', function() {
                 this.classList.add('loading');
-                setTimeout(() => {
-                    generateMockData();
-                    renderStats(state.lotteryType);
+                showToast('正在刷新数据...');
+                fetchLotteryData().then(() => {
                     this.classList.remove('loading');
-                    showToast('数据已刷新');
-                }, 500);
+                }).catch(() => {
+                    this.classList.remove('loading');
+                });
             });
         }
 
@@ -903,7 +1222,11 @@
             initDateSelects();
             initEventListeners();
             updateDailyCard();
-            generateMockData();
+
+            // 加载真实数据
+            fetchLotteryData();
+
+            // 初始渲染统计
             renderStats('dlt');
         }
 
