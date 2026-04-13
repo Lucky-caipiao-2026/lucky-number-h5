@@ -689,12 +689,18 @@
         };
 
         // ==================== API 数据获取 ====================
+        const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+        
         async function fetchLotteryData() {
             try {
-                // 使用公开的彩票API
+                // 使用公开的彩票API + CORS代理
+                const apiUrl = (gameNo) => encodeURIComponent(
+                    `https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.do?gameNo=${gameNo}&provinceId=0&pageSize=50&pageNo=1&isDesc=true&endTime=`
+                );
+                
                 const [dltRes, ssqRes] = await Promise.all([
-                    fetch('https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.do?gameNo=85&provinceId=0&pageSize=50&pageNo=1&isDesc=true&endTime='),
-                    fetch('https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.do?gameNo=01&provinceId=0&pageSize=50&pageNo=1&isDesc=true&endTime=')
+                    fetch(CORS_PROXY + apiUrl('85')),
+                    fetch(CORS_PROXY + apiUrl('01'))
                 ]);
 
                 const dltData = await dltRes.json();
