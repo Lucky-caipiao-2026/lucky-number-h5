@@ -827,6 +827,108 @@
             arrow.textContent = list.classList.contains('hidden') ? '▼' : '▲';
         }
 
+        // ==================== 真实数据获取 ====================
+        const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+        
+        async function fetchLotteryData() {
+            try {
+                showToast('正在获取开奖数据...');
+                
+                // 使用 CORS 代理获取 500彩票网 数据
+                const ssqUrl = encodeURIComponent('https://datachart.500.com/ssq/history/newinc/history.php?start=26000&end=26050');
+                const dltUrl = encodeURIComponent('https://datachart.500.com/dlt/history/newinc/history.php?start=26000&end=26050');
+                
+                // 获取双色球数据
+                const ssqResponse = await fetch(CORS_PROXY + ssqUrl);
+                const ssqHtml = await ssqResponse.text();
+                const ssqData = parseSSQData(ssqHtml);
+                
+                // 获取大乐透数据
+                const dltResponse = await fetch(CORS_PROXY + dltUrl);
+                const dltHtml = await dltResponse.text();
+                const dltData = parseDLTData(dltHtml);
+                
+                if (ssqData.length > 0) {
+                    state.lotteryData.ssq.history = ssqData;
+                    state.lotteryData.ssq.latest = ssqData[0];
+                }
+                
+                if (dltData.length > 0) {
+                    state.lotteryData.dlt.history = dltData;
+                    state.lotteryData.dlt.latest = dltData[0];
+                }
+                
+                calculateStatsFromHistory();
+                renderLatestResult();
+                renderHistoryList();
+                showToast('数据更新成功！', 'success');
+                
+            } catch (error) {
+                console.error('获取数据失败:', error);
+                showToast('数据获取失败，使用离线数据');
+                generateMockData(); // 备用模拟数据
+            }
+        }
+        
+        function parseSSQData(html) {
+            const history = [];
+            const trMatch = html.match(/<tr[^>]*class="[^"]*t_tr[^"]*"[^>]*>[\s\S]*?<\/tr>/gi);
+            if (trMatch) {
+                for (const tr of trMatch.slice(0, 50)) {
+                    const tdMatch = tr.match(/<td[^>]*>([\s\S]*?)<\/td>/gi);
+                    if (tdMatch && tdMatch.length >= 8) {
+                        const getText = (td) => td.replace(/<[^>]+>/g, '').trim();
+                        const period = getText(tdMatch[0]);
+                        const redBalls = [1,2,3,4,5,6].map(i => {
+                            const num = getText(tdMatch[i]);
+                            return parseInt(num) || 0;
+                        }).filter(n => n > 0 && n <= 33);
+                        const blueBall = parseInt(getText(tdMatch[7])) || 0;
+                        
+                        if (redBalls.length === 6 && blueBall > 0) {
+                            history.push({
+                                period: period,
+                                front: redBalls,
+                                back: [blueBall]
+                            });
+                        }
+                    }
+                }
+            }
+            return history;
+        }
+        
+        function parseDLTData(html) {
+            const history = [];
+            const trMatch = html.match(/<tr[^>]*class="[^"]*t_tr[^"]*"[^>]*>[\s\S]*?<\/tr>/gi);
+            if (trMatch) {
+                for (const tr of trMatch.slice(0, 50)) {
+                    const tdMatch = tr.match(/<td[^>]*>([\s\S]*?)<\/td>/gi);
+                    if (tdMatch && tdMatch.length >= 9) {
+                        const getText = (td) => td.replace(/<[^>]+>/g, '').trim();
+                        const period = getText(tdMatch[0]);
+                        const frontBalls = [1,2,3,4,5].map(i => {
+                            const num = getText(tdMatch[i]);
+                            return parseInt(num) || 0;
+                        }).filter(n => n > 0 && n <= 35);
+                        const backBalls = [6,7].map(i => {
+                            const num = getText(tdMatch[i]);
+                            return parseInt(num) || 0;
+                        }).filter(n => n > 0 && n <= 12);
+                        
+                        if (frontBalls.length === 5 && backBalls.length === 2) {
+                            history.push({
+                                period: period,
+                                front: frontBalls,
+                                back: backBalls
+                            });
+                        }
+                    }
+                }
+            }
+            return history;
+        }
+
         // ==================== 备用：模拟数据生成 ====================
         function generateMockData() {
             // 生成模拟历史数据
